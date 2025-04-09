@@ -131,7 +131,7 @@ function M.init_playground(filename)
     vim.keymap.set({ "i" }, "<Tab>", "<Plug>(JqPlaygroundRunQuery)", {
       desc = "Default for JqPlaygroundRunQuery",
     })
-    vim.keymap.set({ "i" }, "<CR>", "<Plug>(JqPlaygroundRunQuery)", {
+    vim.keymap.set({ "i" }, "<M-CR>", "<Plug>(JqPlaygroundRunQuery)", {
       desc = "Default for JqPlaygroundRunQuery",
     })
   end
