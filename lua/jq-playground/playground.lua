@@ -90,6 +90,25 @@ local function create_split_buf(opts)
   return bufnr, winid
 end
 
+local function set_buf_text(text, bufnr)
+  if bufnr == nil then
+    bufnr = vim.fn.bufnr('%')
+  end
+
+  if type(text) == 'string' then
+    text = vim.fn.split(text, '\n')
+  end
+
+  vim.api.nvim_buf_set_lines(
+    bufnr,
+    0,
+    -1,
+    false,
+    text
+  )
+end
+
+
 function M.init_playground(filename)
   local config = require("jq-playground.config").config
   local input_json_bufnr = vim.api.nvim_get_current_buf()
@@ -99,19 +118,18 @@ function M.init_playground(filename)
 
   vim.api.nvim_buf_set_lines(output_json_bufnr, 0, -1, false, {})
 
-  vim.api.nvim_buf_set_extmark(query_bufnr, ns, 0, 0, {
-    virt_text = { { "Run your query with <CR>/<TAB>", "Conceal" } },
-  })
+  -- NOTE:
+  -- Weird solution to put cursor after dot
+  vim.api.nvim_set_current_buf(query_bufnr)
+  set_buf_text('.')
+  vim.api.nvim_win_set_cursor(0, {1, 2}) -- {line, column}, column is 0-based
+  vim.cmd("startinsert")
 
-  -- Delete hint about running the query as soon as the user does something
-  vim.api.nvim_create_autocmd({ 'TextChanged', 'InsertEnter' }, {
-    once = true,
-    group = augroup,
-    buffer = query_bufnr,
-    callback = function ()
-      vim.api.nvim_buf_clear_namespace(query_bufnr, ns, 0, -1)
-    end,
-  })
+  -- assume we're in query_bufnr
+  vim.api.nvim_set_current_buf(query_bufnr)
+  vim.api.nvim_win_set_cursor(0, {1, 1}) -- line 1, column 2 (after dot)
+  vim.cmd("startinsert")
+
 
   local run_jq_query = function()
     run_query(config.cmd, filename or input_json_bufnr, query_bufnr, output_json_bufnr)
