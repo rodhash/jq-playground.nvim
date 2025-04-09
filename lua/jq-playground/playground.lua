@@ -100,7 +100,7 @@ function M.init_playground(filename)
   vim.api.nvim_buf_set_lines(output_json_bufnr, 0, -1, false, {})
 
   vim.api.nvim_buf_set_extmark(query_bufnr, ns, 0, 0, {
-    virt_text = { { "Run your query with <CR>.", "Conceal" } },
+    virt_text = { { "Run your query with <CR>/<TAB>", "Conceal" } },
   })
 
   -- Delete hint about running the query as soon as the user does something
@@ -126,6 +126,12 @@ function M.init_playground(filename)
   -- To have a sensible default. Does not require user to define one
   if not config.disable_default_keymap then
     vim.keymap.set({ "n" }, "<CR>", "<Plug>(JqPlaygroundRunQuery)", {
+      desc = "Default for JqPlaygroundRunQuery",
+    })
+    vim.keymap.set({ "i" }, "<Tab>", "<Plug>(JqPlaygroundRunQuery)", {
+      desc = "Default for JqPlaygroundRunQuery",
+    })
+    vim.keymap.set({ "i" }, "<CR>", "<Plug>(JqPlaygroundRunQuery)", {
       desc = "Default for JqPlaygroundRunQuery",
     })
   end
